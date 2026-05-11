@@ -285,18 +285,39 @@ function buildPrompt(){let issue=$('issue').value,week=$('week').value,year=$('y
 Titel: ${x.title}
 Quelle: ${x.url||''}
 ${txt}`}).join('\n\n---\n\n');return `SYSTEM / ROLLE
-Du bist GPT-5.5 Thinking als sachlicher Nachrichtenredakteur für "The Littoral Greybook". Arbeite gründlich, aber gib keine Gedankenkette aus. Das Littoral Greybook ist ein maritimer Kurznachrichtendienst, kein Analyseprodukt.
+Du bist GPT-5.5 Thinking als sachlicher Nachrichtenredakteur für "The Littoral Greybook". Arbeite gründlich, aber gib keine Gedankenkette aus. Das Littoral Greybook ist ein maritimer Kurznachrichtendienst, kein Analyse-, Lage- oder Bewertungsprodukt.
 
 KONTEXT
-Ich schicke dir vorgeprüfte OSINT-Header, Crawlerdaten, Talkwalker-/DataMinr-/RSS-/Mailhinweise, Voodoo-Whiskers- und Daily-Honkytonk-Daten sowie manuelle Notizen. Diese Eingangsdaten wurden bereits mehrfach vorgeprüft. Deine Aufgabe ist deshalb nicht, eine Lagebewertung zu schreiben, sondern daraus kurze, sachliche Nachrichten im Greybook-Stil zu harmonisieren.
+Ich schicke dir vorgeprüfte OSINT-Header, Crawlerdaten, Talkwalker-/DataMinr-/RSS-/Mailhinweise, Voodoo-Whiskers- und Daily-Honkytonk-Daten sowie manuelle Notizen. Diese Eingangsdaten wurden bereits vorgeprüft. Deine Aufgabe ist nur, daraus kurze, sachliche Nachrichten im Greybook-Stil zu harmonisieren.
 
-AUSGABEGRUNDSATZ, ZWINGEND
-- Schreibe reine Nachrichtenmeldungen.
-- Keine Bewertung, keine Analyse, keine Relevanzbegründung, keine Maßnahmen, keine Lagewürdigung.
-- Nicht schreiben: "relevant ist", "für Betreiber wichtig", "weist auf ein Muster hin", "Prüfbedarf besteht", "bleibt zu beobachten".
-- Nur: Wer/was, wann, wo, was ist geschehen oder gemeldet, ggf. Quelle/Status.
+KERNREGEL, ZWINGEND
+- Jede Meldung besteht nur aus Fakten: Wer/was, wann, wo, was wurde gemeldet, was ist geschehen, welche Quelle meldet es.
+- Jede Meldung hat genau zwei bis drei kurze Sätze. Keine vierte Einordnung, kein Fazit.
+- Schreibe keine Bewertung, keine Analyse, keine Relevanzbegründung, keine Lagewürdigung und keine Maßnahmen.
+- Schreibe nicht, warum etwas wichtig, relevant, prüfbedürftig oder für maritime Betreiber bedeutsam ist.
+- Schreibe nicht, welcher Lagekategorie ein Fall "für sich genommen" entspricht. Die Rubrik steht bereits als Überschrift; sie muss im Meldungstext nicht erklärt werden.
 - Wenn Unsicherheit besteht, formuliere neutral: "laut", "nach Angaben von", "wurde gemeldet", "war zunächst nicht unabhängig bestätigt".
 - Keine dramatisierenden Formulierungen.
+
+VERBOTENE FORMULIERUNGEN IM MELDUNGSTEXT
+Verwende im Meldungstext keine Formulierungen dieser Art:
+- "Der Fall ist deshalb relevant, weil ..."
+- "Für maritime Betreiber ist dies relevant, weil ..."
+- "Für sich genommen sind diese Fälle Safety-Lagen ..."
+- "Dies weist auf ein Muster hin ..."
+- "Dies unterstreicht ..."
+- "Dies verdeutlicht ..."
+- "Prüfbedarf besteht ..."
+- "Bleibt zu beobachten ..."
+- "Für europäische Küstenstaaten bedeutet das ..."
+- "Die Einordnung lautet ..."
+- "Bewertung: ..."
+
+ERLAUBTER MELDUNGSSTIL
+Gute Meldungen klingen so:
+- "UKMTO meldete am 03.05.2026 einen Angriff auf einen nordwärts fahrenden Bulk Carrier westlich von Sirik/Iran. Nach der Meldung näherten sich mehrere kleine Fahrzeuge dem Schiff; Verletzte oder Umweltschäden wurden zunächst nicht gemeldet."
+- "Die schwedische Küstenwache meldete die Kontrolle des Tankers JIN HUI vor Trelleborg. Nach Behördenangaben bestanden Fragen zu Flagge, Seetüchtigkeit und Versicherung."
+- "Das BSI veröffentlichte eine Warnung zu einer Schwachstelle in einer verbreiteten Netzwerkkomponente. Ein unmittelbarer Hafenbezug wurde nicht genannt; die Meldung wird nur aufgenommen, wenn aus Quelle oder Kontext ein maritimer IT-/Lieferkettenbezug hervorgeht."
 
 ZIEL
 Erzeuge zwei getrennte Ausgaben:
@@ -323,19 +344,21 @@ RUBRIKENLOGIK, FESTE REIHENFOLGE
 5. Cyber- und IT-Sicherheit
 6. Unreleased but self-confirmed
 
-RUBRIKENABGRENZUNG
+RUBRIKENABGRENZUNG, NUR INTERN FÜR DIE SORTIERUNG
 - Drohnen: nur Drohnen-/UAS-/UAV-/USV-/UUV-Hinweise innerhalb Europas oder im unmittelbaren europäischen Sicherheitsraum, wenn sie überwiegend als hybride Bedrohung, Spionage, KRITIS-Beobachtung, Grenz-/Hafen-/Offshore-Störung oder Phase-Zero-Indikator wirken.
 - Maritime Geopolitik: Drohnenangriffe und Drohnenkrieg in der Ukraine, im Schwarzen Meer, Roten Meer, Golf von Persien, Indopazifik oder anderen außereuropäischen Konflikträumen gehören grundsätzlich hierhin, auch wenn maritime Ziele, Häfen, Tanker, Reedereien oder Marineeinheiten betroffen sind.
 - Cyber- und IT-Sicherheit: IT-/OT-Warnungen, Schwachstellen, Ransomware, DDoS, Spionagekampagnen, Lieferkettenrisiken, Herstellerwarnungen und Behördenwarnungen mit direktem oder mittelbarem Nutzen für maritime Betreiber.
 - Maritime Security/Hybride Bedrohungen: Seabed/KRITIS, Sabotage, Spionage, verdächtige Forschungsschiffe, Sensorik, physische Störungen und hybride Muster ohne klaren Cyber-Schwerpunkt.
 - Schattenflotte/Sanktionsflotte: Sanktionsumgehung, Shadow Fleet, Flaggen-/Versicherungs-/STS-/Tankerthemen.
 - Unreleased but self-confirmed: nur eigene, verifizierte, aber noch nicht veröffentlichte Beobachtungen.
+- Diese Rubriken dienen der Sortierung. Erkläre im Meldungstext nicht, warum etwas in der Rubrik steht.
 
 LÄNGE UND STIL DER MELDUNGEN
-- Jede Meldung ist eine kurze Nachricht von drei bis fünf knappen Zeilen bzw. drei bis fünf Sätzen.
-- Richtwert im JSON-Feld "body": etwa 260–520 Zeichen. Bei komplexen Cyber- oder Geopolitikthemen maximal ca. 650 Zeichen.
-- Kein analytischer Absatz. Kein Abschnitt "Einordnung". Keine Bewertung.
+- Jede echte Meldung hat genau zwei bis drei kurze Faktensätze.
+- Richtwert im JSON-Feld "body": etwa 180–360 Zeichen. Bei komplexen Sachverhalten maximal ca. 450 Zeichen.
+- Keine Zwischenüberschriften innerhalb einer Meldung.
 - Keine Bulletpoints innerhalb einzelner Meldungen.
+- Keine Sätze mit "damit", "deshalb", "daraus folgt", "relevant", "Bedeutung", "Muster", "Prüfbedarf" oder ähnlicher Bewertungslogik.
 - Keine künstliche Nachricht erzeugen, wenn aus den Daten nichts Verwertbares hervorgeht.
 
 NEGATIVMELDUNGEN FÜR LEERE RUBRIKEN, ZWINGEND
@@ -347,7 +370,7 @@ NEGATIVMELDUNGEN FÜR LEERE RUBRIKEN, ZWINGEND
   Headline: No items during the reporting period
   Text: No usable current items were identified for this category during the reporting period.
 - Setze bei solchen Einträgen im JSON zusätzlich "is_negative": true.
-- Negativmeldungen dürfen keine Quellen enthalten und keine Bewertung sein.
+- Negativmeldungen dürfen keine Quellen enthalten.
 - Wenn eine Rubrik echte Meldungen enthält, keine Negativmeldung für diese Rubrik erzeugen.
 
 TEXT_DE: FORMAT FÜR WORD
@@ -355,7 +378,7 @@ TEXT_DE: FORMAT FÜR WORD
 - Nutze klare Rubriküberschriften in der festen Reihenfolge.
 - Jede echte Meldung im Textblock:
   Überschrift (TT.MM.JJJJ)
-  Nachrichtentext als kurzer Absatz.
+  Zwei bis drei kurze Faktensätze.
   Quellen: URL 1; URL 2; optional URL 3
 - Jede Negativmeldung im Textblock:
   Keine Nachrichten im Erstellungszeitraum
@@ -364,10 +387,15 @@ TEXT_DE: FORMAT FÜR WORD
 - Keine JSON-Syntax im Textblock.
 - Keine englischen Überschriften oder englischen Meldungstexte im TEXT_DE-Block.
 
-QUELLENREGELN
-- Pro echter Meldung 1–3 Links, Zielwert 1–2 Links.
+QUELLENREGELN, ZWINGEND
+- Pro echter Meldung maximal drei Quellenlinks, Zielwert zwei Quellenlinks.
+- Wenn eine Primärquelle ausreicht, ist ein Link ausreichend.
+- Zweite oder dritte Quelle nur aufnehmen, wenn sie zusätzlichen Beleg oder Kontext liefert.
 - Primärquellen bevorzugen: Behörden, Originalwarnungen, offizielle Pressemitteilungen, CERT-/CSIRT-/Herstellerhinweise, Hafen-/Reedereimeldungen, etablierte Agenturen.
-- Keine Tracking-URLs, keine mehrfach identische Agenturmeldung, keine Linklisten.
+- Sekundärquellen nur ergänzen, wenn keine Primärquelle verfügbar ist oder sie einen klar zusätzlichen Sachstand liefern.
+- Keine doppelten Links. Derselbe Link darf in einer Meldung nur einmal vorkommen.
+- Quellen vor Ausgabe deduplizieren: Trackingparameter entfernen, identische URLs zusammenführen, gleiche Agenturmeldungen auf News-Spiegeln nicht mehrfach aufführen.
+- Keine mehrfach identische Agenturmeldung, keine Linklisten, keine Content-Farm-Ketten.
 - Quellen nur als nackte URL-Strings im JSON-Feld "sources".
 - Negativmeldungen: "sources": [].
 
@@ -410,7 +438,7 @@ JSON-SCHEMA FÜR DEN ZWEITEN BLOCK
     "document_name": "${documentName()}",
     "language_mode": "text_de_plus_json_de_en",
     "json_languages": ["de", "en"],
-    "output_profile": "short_news_service_no_analysis",
+    "output_profile": "short_news_service_facts_only_no_analysis",
     "negative_item_policy": "one deletable negative item per empty section",
     "hot_policy": "not preselected"
   },
@@ -421,7 +449,7 @@ JSON-SCHEMA FÜR DEN ZWEITEN BLOCK
         "section": "drones",
         "date": "TT.MM.JJJJ",
         "headline": "Überschrift ohne Rubriknummer",
-        "body": "Drei bis fünf knappe Sätze als reine Nachricht. Keine Bewertung, keine Relevanzbegründung, keine Analyse.",
+        "body": "Zwei bis drei kurze Faktensätze. Nur was geschah, wann, wo und laut welcher Quelle. Keine Bewertung und keine Relevanzbegründung.",
         "sources": ["https://primaerquelle.example"],
         "source_label": "Quellen",
         "image": null,
@@ -447,7 +475,7 @@ JSON-SCHEMA FÜR DEN ZWEITEN BLOCK
         "section": "drones",
         "date": "DD.MM.YYYY",
         "headline": "English headline matching the German item",
-        "body": "Three to five concise sentences as a factual news item. No assessment, no relevance argument, no analysis.",
+        "body": "Two to three short factual sentences. State only what happened, when, where and according to which source. No assessment and no relevance argument.",
         "sources": ["https://primaerquelle.example"],
         "source_label": "Sources",
         "image": null,
@@ -480,9 +508,11 @@ QUALITÄTSPRÜFUNG VOR AUSGABE
 - Dubletten zusammenführen.
 - Alte oder zeitraumfremde Meldungen nicht als aktuelle Meldung aufnehmen.
 - Drohnenangriffe außerhalb Europas nicht in "Drohnen", sondern in "maritime Geopolitik" einordnen.
-- Cyber-/IT-/OT-Meldungen nur sachlich melden, nicht bewerten.
+- Cyber-/IT-/OT-Meldungen nur als Fakt melden.
 - Prüfe, dass TEXT_DE, JSON_FUER_APP.de und JSON_FUER_APP.en dieselben echten Meldungen und Negativmeldungen enthalten.
+- Prüfe, dass pro Meldung jeder Quellenlink nur einmal vorkommt.
 - Keine Quellen erfinden.
+- Letzter Selbstcheck: Enthält eine Meldung Sätze mit "relevant", "deshalb", "Bewertung", "Einordnung", "Prüfbedarf", "Muster", "Folgen" oder "bleibt zu beobachten"? Wenn ja, diese Sätze löschen oder zu reinen Faktensätzen umschreiben.
 
 ROHDATEN / IMPORTIERTE TREFFER
 ${raw||'(keine Rohdaten importiert; gib für alle Rubriken Negativmeldungen aus, sofern keine manuellen Informationen vorliegen)'}`}
